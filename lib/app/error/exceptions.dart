@@ -8,7 +8,15 @@ class ServerException implements Exception {
   }
 }
 
-class CacheException implements Exception {}
+class CacheException implements Exception {
+  String cause;
+  CacheException(this.cause);
+
+  @override
+  String toString() {
+    return cause;
+  }
+}
 
 class DataParsingException implements Exception {
   String cause;

@@ -25,3 +25,8 @@ class DataParsingFailure extends Failure {
   String? cause;
   DataParsingFailure(this.cause) : super(cause);
 }
+
+class CacheFailure extends Failure {
+  String? cause;
+  CacheFailure(this.cause) : super(cause);
+}
