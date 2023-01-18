@@ -15,25 +15,3 @@ class ListSupportedCurrencyUseCase implements UseCase<List<CurrencyModel>, NoPar
   }
 
 }
-
-class ListAllCurrenciesUseCase {
-  final String OrgID;
-  final String page;
-  final String size;
-
-  ListAllCurrenciesUseCase(
-      {
-        required this.OrgID,
-        required this.page,
-        required this.size,
-      });
-
-  Map<String, dynamic> toMap() {
-    final map = {
-      "OrgID": OrgID,
-      "page": page,
-      "size": size,
-    };
-    return map;
-  }
-}
