@@ -47,24 +47,37 @@ void main() {
       'should check if the device is online',
           () async {
         // arrange
+            when(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies())
+                .thenAnswer((_) async => null);
         when(()=>mockNetworkInfo.isConnected).thenAnswer((_) async => true);
         // act
-        currencyConverterRepo.listAllCurrencies();
+            final result = await currencyConverterRepo.listAllCurrencies();
         // assert
-        verify(()=>mockNetworkInfo.isConnected);
+            verify(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies());
+             verify(()=>mockNetworkInfo.isConnected);
+
       },
     );
 
     test(
-      'should return remote data when this is the first time call',
+      'should return remote data when this is the first time call and cache the data',
           () async {
         // arrange
         when(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies())
             .thenAnswer((_) async => tCurrencies);
+        when(()=>mockCurrencyConverterLocalDatasource.cacheCurrencies(any()))
+            .thenAnswer((_) async => true);
+        when(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies())
+            .thenAnswer((_) async => null);
+        when(() => mockNetworkInfo.isConnected,
+        ).thenAnswer((_) async => true);
         // act
         final result = await currencyConverterRepo.listAllCurrencies();
         // assert
+        verify(() => mockNetworkInfo.isConnected);
         verify(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies());
+        verify(()=>mockCurrencyConverterLocalDatasource.cacheCurrencies(tCurrencies));
+        verify(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies());
         expect(result, equals(Right(tCurrencies)));
       },
     );
@@ -75,10 +88,15 @@ void main() {
         // arrange
         when(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies())
             .thenAnswer((_) async => tCurrencies);
+        when(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies())
+            .thenAnswer((_) async => null);
+        when(() => mockNetworkInfo.isConnected,).thenAnswer((_) async => true);
         // act
-        await currencyConverterRepo.listAllCurrencies();
+        final result = await currencyConverterRepo.listAllCurrencies();
         // assert
+        verify(() => mockNetworkInfo.isConnected);
         verify(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies());
+        verify(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies());
         verify(()=>mockCurrencyConverterLocalDatasource.cacheCurrencies(tCurrencies));
       },
     );
@@ -87,14 +105,20 @@ void main() {
       'should return server failure when the call to remote data source is unsuccessful',
           () async {
         // arrange
+            when(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies())
+                .thenAnswer((_) async => null);
         when(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies())
-            .thenThrow(()=>ServerException("server exception"));
+            .thenThrow(ServerException("server exception"));
+        when(() => mockNetworkInfo.isConnected,).thenAnswer((_) async => true);
         // act
         final result = await currencyConverterRepo.listAllCurrencies();
         // assert
+        verify(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies());
         verify(()=>mockCurrencyConverterRemoteDatasource.listAllCurrencies());
-        verifyZeroInteractions(mockCurrencyConverterLocalDatasource);
-        expect(result, equals(Left(ServerFailure("server exception"))));
+        verify(() => mockNetworkInfo.isConnected);
+        expect(result, isA<Left<Failure, List<CurrencyModel>>>().having((p0) => p0.value,
+            'server exception',
+            isA<ServerFailure>()));
       },
     );
 
@@ -120,12 +144,15 @@ void main() {
         // arrange
         when(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies())
             .thenThrow(CacheException("cache Error"));
+        when(() => mockNetworkInfo.isConnected,).thenAnswer((_) async => true);
         // act
         final result = await currencyConverterRepo.listAllCurrencies();
         // assert
         verifyZeroInteractions(mockCurrencyConverterRemoteDatasource);
         verify(()=>mockCurrencyConverterLocalDatasource.listCachedCurrencies());
-        expect(result, equals(Left(CacheFailure("cache Error"))));
+        expect(result, isA<Left<Failure, List<CurrencyModel>>>().having((p0) => p0.value,
+            'cache Error',
+            isA<CacheFailure>()));
       },
     );
   });

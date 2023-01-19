@@ -6,7 +6,9 @@ import 'package:blackstone_task/data/model/historical_data_model.dart';
 import 'package:blackstone_task/domain/repository/currency_converter_repo.dart';
 import 'package:dartz/dartz.dart';
 
+import '../../app/error/exceptions.dart';
 import '../../app/network/network_info.dart';
+import '../../app/utils/repo_impl_callhandler.dart';
 import '../data_source/local_data_source/currency_converter_local_data_source.dart';
 
 class  CurrencyConverterRepoImpl extends CurrencyConverterRepo{
@@ -21,27 +23,43 @@ class  CurrencyConverterRepoImpl extends CurrencyConverterRepo{
     required this.networkInfo,
   });
 
+  // @override
+  // Future<Either<Failure, bool>> cacheCurrencies(List<CurrencyModel> currencies)async {
+  //   return await RepoImplCallHandler<bool>(networkInfo)(() async {
+  //     return await localDataSource.cacheCurrencies(currencies);
+  //   });
+  // }
+
   @override
-  Future<Either<Failure, bool>> cacheCurrencies(List<CurrencyModel> currencies) {
-    // TODO: implement cacheCurrencies
-    throw UnimplementedError();
+  Future<Either<Failure, ConversionResponseModel>> convert(Map<String, dynamic> map)async {
+    return await RepoImplCallHandler<ConversionResponseModel>(networkInfo)(() async {
+      return await remoteDataSource.convert(map);
+    });
   }
 
   @override
-  Future<Either<Failure, ConversionResponseModel>> convert(Map<String, dynamic> map) {
-    // TODO: implement convert
-    throw UnimplementedError();
+  Future<Either<Failure, HistoricalDataModel>> getHistoricalData(Map<String, dynamic> map) async{
+    return await RepoImplCallHandler<HistoricalDataModel>(networkInfo)(() async {
+      return await remoteDataSource.getHistoricalData(map);
+    });
   }
 
   @override
-  Future<Either<Failure, HistoricalDataModel>> getHistoricalData(Map<String, dynamic> map) {
-    // TODO: implement getHistoricalData
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, List<CurrencyModel>>> listAllCurrencies() {
-    // TODO: implement listAllCurrencies
-    throw UnimplementedError();
+  Future<Either<Failure, List<CurrencyModel>>> listAllCurrencies() async{
+    List<CurrencyModel>? cachedList;
+    try{
+      cachedList = await localDataSource.listCachedCurrencies();
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+    if(cachedList==null){
+    return await RepoImplCallHandler<List<CurrencyModel>>(networkInfo)(() async {
+        final result =  await remoteDataSource.listAllCurrencies();
+        await localDataSource.cacheCurrencies(result);
+        return result;
+    });
+    }else{
+      return Right(cachedList);
+    }
   }
 }

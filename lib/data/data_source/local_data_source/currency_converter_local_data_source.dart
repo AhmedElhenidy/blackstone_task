@@ -13,7 +13,7 @@ abstract class CurrencyConverterLocalDataSource {
   /// get the cached currencies list.
   ///
   /// Throws a [CacheException] for all error codes.
-  Future<List<CurrencyModel>> listCachedCurrencies();
+  Future<List<CurrencyModel>?> listCachedCurrencies();
 
 
 }
