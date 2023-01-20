@@ -16,7 +16,7 @@ void main() {
     useCase = GetHistoricalDataUseCase(repository: mockCurrencyConverterRepo);
   });
 
-  final HistoricalDataModel tHistoricalData = HistoricalDataModel();
+  final List<HistoricalDataModel> tHistoricalData = [];
 
   test(
     'should get Historical Data from the repository when calling the corresponding use case',
@@ -24,7 +24,7 @@ void main() {
       // arrange
       when(() => mockCurrencyConverterRepo.getHistoricalData(any()))
           .thenAnswer((_) async => Right(tHistoricalData));
-      final params = GetHistoricalDataUseCaseParams(firstCurrency: "USD_PHP", secondCurrency: "PHP_USD", days: 7);
+      final params = GetHistoricalDataUseCaseParams(currency: "USD_PHP", baseCurrency: "PHP_USD", days: 7);
       // act
       final result = await useCase(params);
       // assert

@@ -37,8 +37,8 @@ void main() {
     );
   });
 
-  final HistoricalDataModel tHistoricalDataModel = HistoricalDataModel();
-  final ConversionResponseModel tConversionResponse = ConversionResponseModel();
+  final List<HistoricalDataModel> tHistoricalDataModel = [];
+  final ConversionResponseModel tConversionResponse = ConversionResponseModel(0.51117);
 
   group('listAllCurrencies', () {
     final List<CurrencyModel> tCurrencies = [];
@@ -192,7 +192,7 @@ void main() {
         final res = await currencyConverterRepo.getHistoricalData({});
 
         // assert
-        expect(res, isA<Left<Failure, HistoricalDataModel>>().having((p0) => p0.value,
+        expect(res, isA<Left<Failure, List<HistoricalDataModel>>>().having((p0) => p0.value,
                 'Left throw a connection failure',
                 isA<ConnectionFailure>()));
 
@@ -217,7 +217,7 @@ void main() {
 
         // assert
         expect(res,
-            isA<Left<Failure, HistoricalDataModel>>().having((p0) => p0.value,
+            isA<Left<Failure, List<HistoricalDataModel>>>().having((p0) => p0.value,
                 'Left throw a connection failure', isA<DataParsingFailure>()));
 
         verify(() => mockNetworkInfo.isConnected);

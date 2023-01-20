@@ -16,7 +16,7 @@ void main() {
     useCase = ConvertCurrencyUseCase(repository: mockCurrencyConverterRepo);
   });
 
-  final ConversionResponseModel tConversion = ConversionResponseModel();
+  final ConversionResponseModel tConversion = ConversionResponseModel(0.51117);
 
   test(
     'should get Historical Data from the repository when calling the corresponding use case',
@@ -24,7 +24,7 @@ void main() {
       // arrange
       when(() => mockCurrencyConverterRepo.convert(any()))
           .thenAnswer((_) async => Right(tConversion));
-      final params = ConvertCurrencyUseCaseParams(firstCurrency: "USD_PHP", secondCurrency: "PHP_USD",);
+      final params = ConvertCurrencyUseCaseParams(baseCurrency: "USD", currency: "PHP",);
       // act
       final result = await useCase(params);
       // assert

@@ -17,19 +17,19 @@ class ConvertCurrencyUseCase implements UseCase<ConversionResponseModel, Convert
 }
 
 class ConvertCurrencyUseCaseParams {
-  final String firstCurrency;
-  final String secondCurrency;
+  final String baseCurrency;
+  final String currency;
 
   ConvertCurrencyUseCaseParams(
       {
-        required this.firstCurrency,
-        required this.secondCurrency,
+        required this.baseCurrency,
+        required this.currency,
       });
 
   Map<String, dynamic> toMap() {
     final map = {
-      "q": "$firstCurrency,$secondCurrency",
-      "compact": "ultra",
+      "currencies": currency,
+      "base_currency": baseCurrency,
     };
     return map;
   }

@@ -7,7 +7,7 @@ import '../../data/model/currency_model.dart';
 
 abstract class CurrencyConverterRepo{
   Future<Either<Failure, List<CurrencyModel>>> listAllCurrencies();
-  Future<Either<Failure, HistoricalDataModel>> getHistoricalData(Map<String,dynamic> map);
+  Future<Either<Failure, List<HistoricalDataModel>>> getHistoricalData(Map<String,dynamic> map);
   Future<Either<Failure, ConversionResponseModel>> convert(Map<String,dynamic> map);
   // Future<Either<Failure, bool>> cacheCurrencies(List<CurrencyModel> currencies);
 }

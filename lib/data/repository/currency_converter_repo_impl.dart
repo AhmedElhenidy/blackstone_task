@@ -38,8 +38,8 @@ class  CurrencyConverterRepoImpl extends CurrencyConverterRepo{
   }
 
   @override
-  Future<Either<Failure, HistoricalDataModel>> getHistoricalData(Map<String, dynamic> map) async{
-    return await RepoImplCallHandler<HistoricalDataModel>(networkInfo)(() async {
+  Future<Either<Failure, List<HistoricalDataModel>>> getHistoricalData(Map<String, dynamic> map) async{
+    return await RepoImplCallHandler<List<HistoricalDataModel>>(networkInfo)(() async {
       return await remoteDataSource.getHistoricalData(map);
     });
   }
