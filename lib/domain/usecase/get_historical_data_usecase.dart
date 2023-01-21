@@ -33,9 +33,10 @@ class GetHistoricalDataUseCaseParams {
     final map = {
       "currencies": currency,
       "base_currency": baseCurrency,
-      "date_to": DateFormat("yyyy-mm-dd").format(DateTime.now()),
-      "date_from": DateFormat("yyyy-mm-dd").format(DateTime.now().subtract( Duration(days: days))),
+      "date_to": DateFormat("yyyy-MM-dd","en").format(DateTime.now().subtract(Duration(days: 1))),
+      "date_from": DateFormat("yyyy-MM-dd","en").format(DateTime.now().subtract( Duration(days: days))),
     };
+    print(map);
     return map;
   }
 }

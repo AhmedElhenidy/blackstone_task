@@ -13,3 +13,16 @@ const Map<String, String> apiHeaders = {
   "Accept": "application/json, text/plain, */*",
   "X-Requested-With": "XMLHttpRequest",
 };
+
+
+
+
+
+
+
+const String kChooseCurrencyExchangeTxt = "Choose Currency";
+const String kConvert = "Convert";
+const String kHistoricalData = "Historical Data";
+
+
+

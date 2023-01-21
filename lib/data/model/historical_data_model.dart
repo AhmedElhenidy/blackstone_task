@@ -12,7 +12,7 @@ class HistoricalData{
   HistoricalData.fromMap(Map<String,dynamic> map) {
     map.forEach((key, value) {
       currency= key;
-      rate = rate;
+      rate = value;
     });
   }
   String? currency;
