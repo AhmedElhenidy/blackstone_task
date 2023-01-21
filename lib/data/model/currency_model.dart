@@ -7,6 +7,12 @@ class CurrencyModel {
   }
   Currency? currency;
   String? code;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map[code!] = currency!.toJson();
+    return map;
+  }
 }
 
 class Currency {

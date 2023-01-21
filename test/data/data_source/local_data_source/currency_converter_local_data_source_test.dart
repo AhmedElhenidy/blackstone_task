@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:blackstone_task/app/error/exceptions.dart';
 import 'package:blackstone_task/app/network/network_manager.dart';
 import 'package:blackstone_task/app/utils/consts.dart';
+import 'package:blackstone_task/data/data_source/local_data_source/currency_converter_local_data_source.dart';
 import 'package:blackstone_task/data/data_source/remote_data_source/currency_converter_remote_data_source.dart';
 import 'package:blackstone_task/data/model/conversion_response_model.dart';
 import 'package:blackstone_task/data/model/currency_model.dart';
@@ -20,8 +21,8 @@ class MockNetworkManager extends Mock implements NetworkManager {}
 
 void main() {
   final MockNetworkManager mockNetworkManager = MockNetworkManager();
-  final CurrencyConverterRemoteDataSourceImpl currencyConverterRemoteDataSourceImpl =
-  CurrencyConverterRemoteDataSourceImpl(networkManager: mockNetworkManager);
+  final CurrencyConverterLocalDataSource currencyConverterLocalDataSourceImpl =
+  CurrencyConverterLocalDataSource(networkManager: mockNetworkManager);
   String tListAllCurrenciesJsonData = fixture('list_all_currencies.json');
   String tHistoricalJsonData = fixture('historical_data.json');
   String tCurrencyConversionJsonData = fixture('conversion_data.json');
@@ -37,19 +38,19 @@ void main() {
             method: RequestMethod.get,
             endPoint: any(named: 'endPoint'))).thenAnswer(
               (_) async => Response(tListAllCurrenciesJsonData,200,
-                  headers: {
-                    HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
-                  },
-              ),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
+            },
+          ),
         );
         //  act
-        final res = await currencyConverterRemoteDataSourceImpl.listAllCurrencies();
+        final res = await currencyConverterLocalDataSourceImpl.listAllCurrencies();
         //  assert
         expect(res, isA<List<CurrencyModel>>());
         verify(() => mockNetworkManager.request(
-            method: RequestMethod.get,
-            endPoint: kListAllCurrencies,
-            ));
+          method: RequestMethod.get,
+          endPoint: kListAllCurrencies,
+        ));
         //verifyNoMoreInteractions(mockNetworkManager);
       },
     );
@@ -58,24 +59,24 @@ void main() {
       'should throw server error ',
           () async {
         //  arrange
-            when(() => mockNetworkManager.request(
-                method: RequestMethod.get,
-                endPoint: any(named: 'endPoint'))).thenAnswer(
-                  (_) async => Response("{\"message\": \"$causingError\"}",401,),
-            );
+        when(() => mockNetworkManager.request(
+            method: RequestMethod.get,
+            endPoint: any(named: 'endPoint'))).thenAnswer(
+              (_) async => Response("{\"message\": \"$causingError\"}",401,),
+        );
 
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.listAllCurrencies;
+        final call = currencyConverterLocalDataSourceImpl.listAllCurrencies;
         //  assert
         expect(() => call(),
             throwsA(isA<ServerException>().having(
                     (p0) => p0.toString(), 'the causing error', causingError)));
 
-            verify(() => mockNetworkManager.request(
-              method: RequestMethod.get,
-              endPoint: kListAllCurrencies,
-            ));
-            //verifyNoMoreInteractions(mockNetworkManager);
+        verify(() => mockNetworkManager.request(
+          method: RequestMethod.get,
+          endPoint: kListAllCurrencies,
+        ));
+        //verifyNoMoreInteractions(mockNetworkManager);
       },
     );
 
@@ -83,13 +84,13 @@ void main() {
       'should throw data parsing exception',
           () async {
         //  arrange
-            when(() => mockNetworkManager.request(
-                method: RequestMethod.get,
-                endPoint: any(named: 'endPoint'))).thenAnswer(
-                  (_) async => Response("",200,),
-            );
+        when(() => mockNetworkManager.request(
+            method: RequestMethod.get,
+            endPoint: any(named: 'endPoint'))).thenAnswer(
+              (_) async => Response("",200,),
+        );
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.listAllCurrencies;
+        final call = currencyConverterLocalDataSourceImpl.listAllCurrencies;
         //  assert
         expect(() => call(), throwsA(isA<DataParsingException>()));
       },
@@ -108,8 +109,8 @@ void main() {
           () async {
         //  arrange
         when(() => mockNetworkManager.request(
-            method: RequestMethod.get,
-            endPoint: any(named: 'endPoint'),
+          method: RequestMethod.get,
+          endPoint: any(named: 'endPoint'),
           queryParameters: any(named: 'queryParameters'),
         )).thenAnswer(
               (_) async => Response(tHistoricalJsonData,200,
@@ -120,7 +121,7 @@ void main() {
         );
 
         //  act
-        final res = await currencyConverterRemoteDataSourceImpl.getHistoricalData(params);
+        final res = await currencyConverterLocalDataSourceImpl.getHistoricalData(params);
         //  assert
         expect(res, isA<List<HistoricalDataModel>>());
         verify(() => mockNetworkManager.request(
@@ -144,16 +145,16 @@ void main() {
         );
 
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.getHistoricalData;
+        final call = currencyConverterLocalDataSourceImpl.getHistoricalData;
         //  assert
         expect(() => call(params),
             throwsA(isA<ServerException>().having(
                     (p0) => p0.toString(), 'the causing error', causingError)));
 
         verify(() => mockNetworkManager.request(
-          method: RequestMethod.get,
-          endPoint: kHistorical,
-          queryParameters: params
+            method: RequestMethod.get,
+            endPoint: kHistorical,
+            queryParameters: params
         ));
         //verifyNoMoreInteractions(mockNetworkManager);
       },
@@ -170,7 +171,7 @@ void main() {
               (_) async => Response("",200,),
         );
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.getHistoricalData;
+        final call = currencyConverterLocalDataSourceImpl.getHistoricalData;
         //  assert
         expect(() => call(params), throwsA(isA<DataParsingException>()));
         verify(() => mockNetworkManager.request(
@@ -206,7 +207,7 @@ void main() {
         );
 
         //  act
-        final res = await currencyConverterRemoteDataSourceImpl.convert(params);
+        final res = await currencyConverterLocalDataSourceImpl.convert(params);
         //  assert
         expect(res, isA<ConversionResponseModel>());
         verify(() => mockNetworkManager.request(
@@ -230,7 +231,7 @@ void main() {
         );
 
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.convert;
+        final call = currencyConverterLocalDataSourceImpl.convert;
         //  assert
         expect(() => call(params),
             throwsA(isA<ServerException>().having(
@@ -256,7 +257,7 @@ void main() {
               (_) async => Response("",200,),
         );
         //  act
-        final call = currencyConverterRemoteDataSourceImpl.convert;
+        final call = currencyConverterLocalDataSourceImpl.convert;
         //  assert
         expect(() => call(params), throwsA(isA<DataParsingException>()));
         verify(() => mockNetworkManager.request(

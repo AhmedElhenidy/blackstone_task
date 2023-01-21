@@ -48,14 +48,15 @@ class  CurrencyConverterRepoImpl extends CurrencyConverterRepo{
   Future<Either<Failure, List<CurrencyModel>>> listAllCurrencies() async{
     List<CurrencyModel>? cachedList;
     try{
-      cachedList = await localDataSource.listCachedCurrencies();
+       cachedList = await localDataSource.listCachedCurrencies();
+       print("fromLacal${cachedList?.length}");
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
     if(cachedList==null){
     return await RepoImplCallHandler<List<CurrencyModel>>(networkInfo)(() async {
         final result =  await remoteDataSource.listAllCurrencies();
-        await localDataSource.cacheCurrencies(result);
+         await localDataSource.cacheCurrencies(result);
         return result;
     });
     }else{
