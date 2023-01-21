@@ -1,16 +1,14 @@
 # blackstone_task
 
-A new Flutter project.
+A Currency Flutter project.
 
-## Getting Started
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+-you van build this project by cloning this repo and use [flutter run] to run this project
+ 
+- This project is fully build with TDD and Clean architecture 
+- TDD is used to automate tests that validate the functionality of the software I'm coding.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- I preferred to use Share Preferences technique to cache data because it's light and fast
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
